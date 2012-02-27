@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cd $( dirname $0 )
+
+source ./config
+
+REALIP=$( curl --silent http://myip.dtdns.com )
+DNSIP=$( dig +short $HOSTNAME )
+
+AGENT="dtdnsu"
+VERSION="0.1"
+
+if [[ "$REALIP" != "$DNSIP" ]]; then
+	echo -e "$HOSTNAME DtDNS record incorrect.\nUpdating ..."
+	STATUS=$( curl --silent --user-agent "$AGENT_$VERSION" "http://www.dtdns.com/api/autodns.cfm?id=$HOSTNAME&pw=$PASSWORD&ip=$REALIP" )
+	if [[ $STATUS != "Host $HOSTNAME now points to $REALIP" ]]; then
+		#echo -e "DtDNS update appears to have failed with the message:"
+		echo -e $STATUS
+	fi
+else
+	echo -e "$HOSTNAME DtDNS record correct!\nExiting ..."
+fi
