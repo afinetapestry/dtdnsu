@@ -4,7 +4,7 @@ cd $( dirname $( readlink -f $0 ) )
 
 source ./config
 
-REALIP=$( curl --silent https://myip.dtdns.com )
+REALIP=$( curl --silent http://myip.dtdns.com )
 DNSIP=$( dig +short $HOSTNAME )
 
 AGENT="dtdnsu"
