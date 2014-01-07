@@ -4,19 +4,36 @@ cd $( dirname $( readlink -f $0 ) )
 
 source ./config
 
-REALIP=$( curl --silent http://myip.dtdns.com )
-DNSIP=$( dig +short $HOSTNAME )
-
-AGENT="dtdnsu"
-VERSION="0.1"
-
-if [[ "$REALIP" != "$DNSIP" ]]; then
-	echo -e "$HOSTNAME DtDNS record incorrect.\nUpdating ..."
+function update() {
 	STATUS=$( curl --silent --user-agent "$AGENT_$VERSION" "https://www.dtdns.com/api/autodns.cfm?id=$HOSTNAME&pw=$PASSWORD&ip=$REALIP" )
 	if [[ $STATUS != "Host $HOSTNAME now points to $REALIP" ]]; then
 		#echo -e "DtDNS update appears to have failed with the message:"
 		echo -e $STATUS
 	fi
+}
+
+REALIP=$( curl --silent http://myip.dtdns.com )
+DNSIP=$( dig +short $HOSTNAME )
+
+AGENT="dtdnsu"
+VERSION="0.2"
+
+NOW=$( date '+%s' )
+
+if [[ ! -e ./when ]]; then
+	echo "First-run updating"
+	update
+	echo "$NOW" > ./when
+	exit
+fi
+
+THEN=$(( $( cat ./when ) + 69 * 60 * 60 * 24 ))
+
+if [[ "$REALIP" != "$DNSIP" ]] || (( $NOW > $THEN )); then
+	echo -e "$HOSTNAME DtDNS record incorrect.\nUpdating ..."
+	update
+	echo "$NOW" > ./when
 else
 	echo -e "$HOSTNAME DtDNS record correct!\nExiting ..."
 fi
+
