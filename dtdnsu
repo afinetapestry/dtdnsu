@@ -27,7 +27,7 @@ if [[ ! -e ./when ]]; then
 	exit
 fi
 
-THEN=$(( $( cat ./when ) + 69 * 60 * 60 * 24 ))
+THEN=$(( $( cat ./when ) + 39 * 60 * 60 * 24 ))
 
 if [[ "$REALIP" != "$DNSIP" ]] || (( $NOW > $THEN )); then
 	echo -e "$HOSTNAME DtDNS record incorrect.\nUpdating ..."

@@ -3,3 +3,5 @@ To install:
 	2) $ cp config.example config
 	3) $ vim config
 	4) $ ln -s $( pwd )/dtdnsu /etc/cron.hourly/dtdnsu
+	5) $ ./dtdnsu
+
